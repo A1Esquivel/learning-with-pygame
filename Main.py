@@ -6,6 +6,7 @@ screen = pygame.display.set_mode((800,400))
 pygame.display.set_caption('Corvids Adventure')
 clock = pygame.time.Clock()
 test_font = pygame.font.Font('fonts/Pixeltype.ttf', 50)
+game_active = True
 
 sky_surf = pygame.image.load('Graphics/Sky.png').convert()
 ground_surf = pygame.image.load('Graphics/Ground.png').convert()
@@ -29,32 +30,36 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if player_rect.collidepoint(event.pos):
+                player_gravity = -20
+               
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 player_gravity = -20
-          
-    screen.blit(sky_surf, (0,0))
-    screen.blit(ground_surf, (0,300))
-    pygame.draw.rect(screen,('#d0f4f7'),score_rect)
-    pygame.draw.rect(screen,('#d0f4f7'),score_rect,20)
-    screen.blit(score_surf,score_rect)
     
-    snail_rect.x -= 4
-    if snail_rect.right <= 0: snail_rect.left = 800
-    screen.blit(snail_surf,snail_rect)
-    
-    #Player
-    player_gravity += 1
-    player_rect.y += player_gravity
-    screen.blit(player_surf,player_rect)
+    if game_active:      
+        screen.blit(sky_surf, (0,0))
+        screen.blit(ground_surf, (0,300))
+        pygame.draw.rect(screen,('#d0f4f7'),score_rect)
+        pygame.draw.rect(screen,('#d0f4f7'),score_rect,20)
+        screen.blit(score_surf,score_rect)
+        
+        snail_rect.x -= 4
+        if snail_rect.right <= 0: snail_rect.left = 800
+        screen.blit(snail_surf,snail_rect)
+        
+        #Player
+        player_gravity += 1
+        player_rect.y += player_gravity
+        if player_rect.bottom >= 300: player_rect.bottom = 300
+        screen.blit(player_surf,player_rect)
 
-    #if player_rect.collidedict(snail_rect):
-        #print('collision')
-    
-    #mouse_pos = pygame.mouse.get_pos()
-    #if player_rect.collidepoint(mouse_pos):
-        #print('collision')
+        #collision
+        if snail_rect.colliderect(player_rect):
+            game_active = False
+    else:
+        break
 
     pygame.display.update()
     clock.tick(60)
